@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rcon Finishing Units - Your Partner in Excellence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F7F7; /* Using the lightest color from your palette */
+        }
+        /* Custom styles for image carousel (simplified for this example) */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
+        }
+        .carousel-slide {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide img {
+            width: 100%;
+            flex-shrink: 0;
+            object-fit: cover;
+            /* height: 400px; /* Consistent height for carousel images */
+        }
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: #3F72AF; /* Active dot color */
+        }
+
+        /* Custom Animations */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInSlideUp {
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+
+        /* New Animations */
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slideInLeft {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        /* Utility to delay animations (optional, for staggered effects) */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Terms of Service Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(219, 226, 239, 0.9), rgba(63, 114, 175, 0.9)); /* Gradient from palette with transparency */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 600px;
+            text-align: left;
+            max-height: 90vh; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for long content */
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-content h2 {
+            color: #112D4E;
+            font-size: 2.25rem; /* 3xl */
+            font-weight: 700; /* bold */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content p, .modal-content li {
+            color: #4B5563; /* gray-700 */
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .modal-content a {
+            color: #3F72AF;
+            text-decoration: underline;
+            transition: color 0.2s ease-in-out;
+        }
+        .modal-content a:hover {
+            color: #112D4E;
+        }
+
+        /* Style for the message box */
+        #message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001; /* Higher than modal overlay */
+            transition: opacity 0.5s ease-in-out;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        /* Back to Top Button */
+        #back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #3F72AF;
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px; /* Full rounded */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+        }
+
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Language dropdown styling */
+        .language-dropdown {
+            margin-left: 1rem; /* Adjust as needed for spacing */
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #DBE2EF; /* Lightest color from palette */
+            color: #112D4E; /* Darkest color for text */
+            border: 1px solid #3F72AF; /* Medium blue border */
+            cursor: pointer;
+            font-weight: 500; /* Medium font weight */
+            transition: all 0.2s ease-in-out;
+        }
+
+        .language-dropdown:hover {
+            background-color: #F9F7F7; /* Lighter on hover */
+            border-color: #112D4E; /* Darker border on hover */
+        }
+
+        .language-dropdown:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(63, 114, 175, 0.5); /* Focus ring color */
+        }
+
+        /* Loading animation styles */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(63, 114, 175, 0.9), rgba(17, 45, 78, 0.9)); /* Gradient background from palette */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Above everything */
+            transition: opacity 0.5s ease-out;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Allows clicks on content underneath when hidden */
+        }
+
+        .rcon-loader {
+            font-family: 'Inter', sans-serif; /* Use the site's font */
+            font-size: 4rem; /* Large font size */
+            font-weight: 700; /* Bold */
+            color: #F9F7F7; /* Off-white for contrast on dark gradient */
+            display: flex; /* Arrange letters in a row */
+            animation: pulse-rcon 1.5s infinite ease-in-out; /* Overall word pulse */
+        }
+
+        .rcon-loader span {
+            display: inline-block; /* Essential for transform on individual letters */
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+            animation: letter-pop-in 0.6s forwards ease-out; /* Animation for each letter */
+        }
+
+        /* Stagger the animation */
+        .rcon-loader span:nth-child(1) { animation-delay: 0.1s; }
+        .rcon-loader span:nth-child(2) { animation-delay: 0.2s; }
+        .rcon-loader span:nth-child(3) { animation-delay: 0.3s; }
+        .rcon-loader span:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes pulse-rcon {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes letter-pop-in {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            70% {
+                opacity: 1;
+                transform: translateY(-5px) scale(1.05); /* Slight overshoot */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">
+        <div class="rcon-loader">
+            <span>R</span><span>c</span><span>o</span><span>n</span>
+        </div>
+    </div>
+
+    <div id="message-box" class="hidden opacity-0" role="alert">
+        <p id="message-text"></p>
+    </div>
+
+    <div id="terms-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h2 id="modal-title" data-en="Terms of Service Agreement" data-ar="اتفاقية شروط الخدمة">Terms of Service Agreement</h2>
+            <p data-en="Welcome to Rcon Finishing Units. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions of use, which, together with our privacy policy, govern Rcon Finishing Units’ relationship with you in relation to this website. If you disagree with any part of these terms and conditions, please do not use our website." data-ar="مرحباً بكم في وحدات ركون للتشطيبات. من خلال الوصول إلى هذا الموقع واستخدامه، فإنك توافق على الالتزام بشروط وأحكام الاستخدام التالية، والتي تحكم، جنبًا إلى جنب مع سياسة الخصوصية الخاصة بنا، علاقة وحدات ركون للتشطيبات بك فيما يتعلق بهذا الموقع. إذا كنت لا توافق على أي جزء من هذه الشروط والأحكام، يرجى عدم استخدام موقعنا.">Welcome to Rcon Finishing Units. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions of use, which, together with our privacy policy, govern Rcon Finishing Units’ relationship with you in relation to this website. If you disagree with any part of these terms and conditions, please do not use our website.</p>
+
+            <p data-en="The content of the pages of this website is for your general information and and use only. It is subject to change without notice." data-ar="محتوى صفحات هذا الموقع هو لمعلوماتك العامة واستخدامك فقط. وهو عرضة للتغيير دون إشعار.">The content of the pages of this website is for your public information and use only. It is subject to change without notice.</p>
+
+            <p data-en="Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, performance, completeness or suitability of the information and materials found or offered on this website for any particular purpose. You acknowledge that such information and materials may contain inaccuracies or errors and we expressly exclude liability for any such inaccuracies or errors to the fullest extent permitted by law." data-ar="لا نقدم نحن ولا أي طرف ثالث أي ضمان أو كفالة فيما يتعلق بدقة أو توقيت أو أداء أو اكتمال أو ملاءمة المعلومات والمواد الموجودة أو المعروضة على هذا الموقع لأي غرض معين. أنت تقر بأن هذه المعلومات والمواد قد تحتوي على عدم دقة أو أخطاء ونحن نستبعد صراحة المسؤولية عن أي عدم دقة أو أخطاء إلى أقصى حد يسمح به القانون.">Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, performance, completeness or suitability of the information and materials found or offered on this website for any particular purpose. You acknowledge that such information and materials may contain inaccuracies or errors and we expressly exclude liability for any such inaccuracies or errors to the fullest extent permitted by law.</p>
+
+            <p data-en="Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. It shall be your own responsibility to ensure that any products, services or information available through this website meet your specific requirements." data-ar="يقع استخدامك لأي معلومات أو مواد على هذا الموقع على مسؤوليتك الخاصة بالكامل، ولن نتحمل أي مسؤولية عن ذلك. تقع على عاتقك مسؤولية التأكد من أن أي منتجات أو خدمات أو معلومات متاحة من خلال هذا الموقع تلبي متطلباتك الخاصة.">Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. It shall be your own responsibility to ensure that any products, services or information available through this website meet your specific requirements.</p>
+
+            <p data-en="This website contains material which is owned by or licensed to us. This material includes, but is not limited to, the design, layout, look, appearance and graphics. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these terms and conditions." data-ar="يحتوي هذا الموقع على مواد مملوكة لنا أو مرخصة لنا. تشمل هذه المواد، على سبيل المثال لا الحصر، التصميم والتخطيط والمظهر والرسومات. يحظر إعادة الإنتاج بخلاف ما يتوافق مع إشعار حقوق الطبع والنشر، والذي يشكل جزءًا من هذه الشروط والأحكام.">This website contains material which is owned by or licensed to us. This material includes, but is not limited to, the design, layout, look, appearance and graphics. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these terms and conditions.</p>
+
+            <p data-en="All trademarks reproduced in this website, which are not the property of, or licensed to the operator, are acknowledged on the website." data-ar="يتم الإقرار بجميع العلامات التجارية المستنسخة في هذا الموقع، والتي ليست ملكًا للمشغل أو مرخصة له، على الموقع.">All trademarks reproduced in this website, which are not the property of, or licensed to the operator, are acknowledged on the website.</p>
+
+            <p data-en="Unauthorised use of this website may give rise to a claim for damages and/or be a criminal offence." data-ar="قد يؤدي الاستخدام غير المصرح به لهذا الموقع إلى المطالبة بتعويضات و/أو أن يكون جريمة جنائية.">Unauthorised use of this website may give rise to a claim for damages and/or be a criminal offence.</p>
+
+            <p data-en="From time to time, this website may also include links to other websites. These links are provided for your convenience to provide further information. They do not signify that we endorse the website(s). We have no responsibility for the content of the linked website(s)." data-ar="من وقت لآخر، قد يتضمن هذا الموقع أيضًا روابط لمواقع أخرى. يتم توفير هذه الروابط لراحتك لتوفير مزيد من المعلومات. لا تعني أنها موافقة منا على الموقع (المواقع). لا نتحمل أي مسؤولية عن محتوى الموقع (المواقع) المرتبطة.">From time to time, this website may also include links to other websites. These links are provided for your convenience to provide further information. They do not signify that we endorse the website(s). We have no responsibility for the content of the linked website(s).</p>
+
+            <p data-en="Your use of this website and any dispute arising out of such use of the website is subject to the laws of [Your Country/State]." data-ar="يخضع استخدامك لهذا الموقع وأي نزاع ينشأ عن هذا الاستخدام لقوانين [بلدك/ولايتك].">Your use of this website and any dispute arising out of such use of the website is subject to the laws of [Your Country/State].</p>
+
+            <div class="flex items-center mt-6">
+                <input type="checkbox" id="terms-checkbox" class="h-5 w-5 text-[#3F72AF] focus:ring-[#3F72AF] border-gray-300 rounded">
+                <label for="terms-checkbox" class="ml-2 text-gray-800 text-base" data-en="I have read and agree to the Terms of Service" data-ar="لقد قرأت ووافقت على شروط الخدمة">I have read and agree to the <a href="terms_of_service.html" target="_blank" rel="noopener noreferrer">Terms of Service</a></label>
+            </div>
+            <div class="text-center mt-6">
+                <button id="agree-terms-btn" class="bg-gradient-to-r from-[#3F72AF] to-[#112D4E] text-white font-bold py-3 px-8 rounded-full shadow-lg hover:from-[#112D4E] hover:to-[#3F72AF] transition duration-300 ease-in-out transform hover:scale-105" data-en="Agree and Enter Site" data-ar="موافق وأدخل الموقع">
+                    Agree and Enter Site
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bg-gradient-to-r from-[#3F72AF] to-[#112D4E] p-4 shadow-lg rounded-b-xl sticky top-0 z-50" aria-label="Main Navigation">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            <a href="#" class="text-[#F9F7F7] text-3xl font-bold rounded-lg px-3 py-1 hover:bg-[#DBE2EF] hover:text-[#112D4E] transition duration-300 ease-in-out" aria-label="Rcon Home">
+                Rcon
+            </a>
+
+            <div class="block lg:hidden">
+                <button id="nav-toggle" class="flex items-center px-3 py-2 border rounded text-[#DBE2EF] border-[#DBE2EF] hover:text-white hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-75" aria-label="Toggle navigation menu">
+                    <svg class="fill-current h-6 w-6" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <title>Menu</title>
+                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v15z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="nav-content" class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden transition-all duration-300 ease-in-out">
+                <div class="text-lg lg:flex-grow lg:text-right">
+                    <a href="#home" class="block mt-4 lg:inline-block lg:mt-0 text-[#DBE2EF] hover:text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-[#3F72AF]" data-en="Home" data-ar="الرئيسية">
+                        Home
+                    </a>
+                    <a href="#about" class="block mt-4 lg:inline-block lg:mt-0 text-[#DBE2EF] hover:text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-[#3F72AF]" data-en="About" data-ar="عنا">
+                        About
+                    </a>
+                    <a href="#services" class="block mt-4 lg:inline-block lg:mt-0 text-[#DBE2EF] hover:text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-[#3F72AF]" data-en="Services" data-ar="خدماتنا">
+                        Services
+                    </a>
+                    <a href="#contact" class="block mt-4 lg:inline-block lg:mt-0 text-[#DBE2EF] hover:text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-[#3F72AF]" data-en="Contact" data-ar="اتصل بنا">
+                        Contact
+                    </a>
+                    <select id="language-switcher" class="language-dropdown block mt-4 lg:inline-block lg:mt-0">
+                        <option value="en">English</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="container mx-auto p-8 text-center mt-10 bg-white shadow-lg rounded-xl mb-12 opacity-0 transform translate-y-5 animate-fadeInSlideUp">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 text-[#112D4E]" data-en="Rcon Finishing Units" data-ar="وحدات اركون للتشطيبات">Rcon Finishing Units</h1>
+        <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto" data-en="Your trusted partner for high-quality finishing solutions. We transform spaces with precision and excellence, making your vision a stunning reality." data-ar="شريكك الموثوق به لحلول التشطيبات عالية الجودة. نحول المساحات بدقة وتميز، لنجعل رؤيتك حقيقة مذهلة.">
+            Your trusted partner for high-quality finishing solutions. We transform spaces with precision and excellence,
+            making your vision a stunning reality.
+        </p>
+        <div class="flex justify-center gap-8 mb-10">
+            <img src="photos/6.jpeg" alt="Elegant modern hallway design with lighting and plants" class="rounded-lg shadow-md w-full md:w-2/5 object-cover h-56 sm:h-64 md:h-80 animate-slideInLeft">
+            <img src="photos/8.jpeg" alt="Contemporary living room with large sofa and slatted wall feature" class="rounded-lg shadow-md w-full md:w-2/5 object-cover h-56 sm:h-64 md:h-80 animate-slideInRight">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Residential Mastery" data-ar="إتقان المشاريع السكنية">Residential Mastery</h3>
+                <p class="text-gray-800" data-en="Bringing your dream home to life with impeccable finishes and attention to every detail." data-ar="تحويل منزل أحلامك إلى حقيقة بتشطيبات لا تشوبها شائبة واهتمام بكل التفاصيل.">Bringing your dream home to life with impeccable finishes and attention to every detail.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Commercial Excellence" data-ar="التميز التجاري">Commercial Excellence</h3>
+                <p class="text-gray-800" data-en="Enhancing business environments with professional, durable, and aesthetically pleasing finishes." data-ar="تحسين بيئات العمل بتشطيبات احترافية، متينة، وجمالية.">Enhancing business environments with professional, durable, and aesthetically pleasing finishes.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Renovation Revival" data-ar="تجديد المساحات">Renovation Revival</h3>
+                <p class="text-gray-800" data-en="Modernizing and revitalizing existing spaces with expert craftsmanship and innovative solutions." data-ar="تحديث وإحياء المساحات القائمة بحرفية الخبراء وحلول مبتكرة.">Modernizing and revitalizing existing spaces with expert craftsmanship and innovative solutions.</p>
+            </div>
+        </div>
+        <div class="flex justify-center gap-8 mb-10">
+             <img src="photos/7.jpeg" alt="Modern dining room with unique ceiling lighting and wood slat wall" class="rounded-lg shadow-md w-full md:w-2/5 object-cover h-56 sm:h-64 md:h-80 animate-slideInLeft">
+            <img src="photos/5.jpeg" alt="Stylish bathroom with round illuminated mirror and textured wall tiles" class="rounded-lg shadow-md w-full md:w-2/5 object-cover h-56 sm:h-64 md:h-80 animate-slideInRight">
+        </div>
+
+        
+    
+    </section>
+
+    <section id="about" class="container mx-auto p-8 bg-white shadow-lg rounded-xl mb-12 opacity-0 transform translate-y-5 animate-fadeInSlideUp">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-6 text-[#112D4E]" data-en="About Us" data-ar="من نحن">About Us</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div class="lg:text-left text-center">
+                <p class="text-xl text-gray-700 mb-4" data-en="Rcon Finishing Units is dedicated to delivering exceptional quality and unparalleled craftsmanship in every project we undertake. With a foundation built on precision and client satisfaction, we have become a leading name in high-end finishing solutions." data-ar="تكرس وحدات ركون للتشطيبات جهودها لتقديم جودة استثنائية وحرفية لا مثيل لها في كل مشروع نقوم به. بفضل أساسنا المبني على الدقة ورضا العملاء، أصبحنا اسماً رائداً في حلول التشطيبات الراقية.">
+                    Rcon Finishing Units is dedicated to delivering exceptional quality and unparalleled craftsmanship in every project we undertake.
+                    With a foundation built on precision and client satisfaction, we have become a leading name in high-end finishing solutions.
+                </p>
+                <p class="text-lg text-gray-700 mb-4" data-en="Our team comprises highly skilled professionals, designers, and artisans who are passionate about transforming spaces. We combine innovative techniques with traditional artistry to create environments that are not only beautiful but also highly functional and enduring." data-ar="يتكون فريقنا من محترفين ذوي مهارات عالية، ومصممين، وحرفيين شغوفين بتحويل المساحات. نجمع بين التقنيات المبتكرة والفن التقليدي لخلق بيئات ليست جميلة فحسب، بل عملية ومتينة أيضاً.">
+                    Our team comprises highly skilled professionals, designers, and artisans who are passionate about transforming spaces.
+                    We combine innovative techniques with traditional artistry to create environments that are not only beautiful but also highly functional and enduring.
+                </p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#112D4E] mt-8 mb-4" data-en="Our Vision" data-ar="رؤيتنا">Our Vision</h3>
+                <p class="text-lg text-gray-700" data-en="To be the most trusted and sought-after finishing unit company, recognized for our commitment to excellence, sustainable practices, and the lasting value we bring to every client's space." data-ar="أن نكون الشركة الأكثر ثقة وطلبًا في مجال وحدات التشطيب، المعترف بها لالتزامنا بالتميز، والممارسات المستدامة، والقيمة الدائمة التي نقدمها لكل مساحة عميل.">
+                    To be the most trusted and sought-after finishing unit company, recognized for our commitment to excellence,
+                    sustainable practices, and the lasting value we bring to every client's space.
+                </p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#112D4E] mt-8 mb-4" data-en="Our Values" data-ar="قيمنا">Our Values</h3>
+                <ul class="list-disc list-inside text-lg text-gray-700 space-y-2">
+                    <li data-en="Quality First: Uncompromising standards in materials and execution." data-ar="الجودة أولاً: معايير لا تقبل المساومة في المواد والتنفيذ."><strong>Quality First:</strong> Uncompromising standards in materials and execution.</li>
+                    <li data-en="Client-Centric: Understanding and exceeding client expectations." data-ar="محورها العميل: فهم توقعات العميل وتجاوزها."><strong>Client-Centric:</strong> Understanding and exceeding client expectations.</li>
+                    <li data-en="Innovation: Embracing new techniques and creative solutions." data-ar="الابتكار: تبني تقنيات جديدة وحلول إبداعية."><strong>Innovation:</strong> Embracing new techniques and creative solutions.</li>
+                    <li data-en="Integrity: Operating with honesty and transparency." data-ar="النزاهة: العمل بصدق وشفافية."><strong>Integrity:</strong> Operating with honesty and transparency.</li>
+                    <li data-en="Sustainability: Committed to environmentally responsible practices." data-ar="الاستدامة: الالتزام بالممارسات المسؤولة بيئياً."><strong>Sustainability:</strong> Committed to environmentally responsible practices.</li>
+                </ul>
+            </div>
+            <div class="relative flex justify-center items-center">
+                <div class="carousel-container">
+                    <div id="about-carousel" class="carousel-slide">
+                        <img src="photos/1.jpeg" alt="Luxurious bedroom with an arched wooden headboard and accent lighting" class="rounded-lg shadow-md h-64 sm:h-80 lg:h-96">
+                        <img src="photos/3.jpeg" alt="Modern living room with a large TV mounted on a textured wall with LED lighting" class="rounded-lg shadow-md h-64 sm:h-80 lg:h-96">
+                        <img src="photos/WhatsApp Image 2025-06-24 at 8.38.04 PM.jpeg" alt="Contemporary kitchen design with under-cabinet lighting and a marble island" class="rounded-lg shadow-md h-64 sm:h-80 lg:h-96">
+                    </div>
+                    <div id="about-carousel-dots" class="carousel-dots" role="tablist">
+                        <div class="carousel-dot active" data-slide="0" role="tab" aria-selected="true" aria-controls="about-carousel-slide-0" tabindex="0"></div>
+                        <div class="carousel-dot" data-slide="1" role="tab" aria-selected="false" aria-controls="about-carousel-slide-1" tabindex="-1"></div>
+                        <div class="carousel-dot" data-slide="2" role="tab" aria-selected="false" aria-controls="about-carousel-slide-2" tabindex="-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+
+    <section id="services" class="container mx-auto p-8 text-center bg-white shadow-lg rounded-xl mb-12 opacity-0 transform translate-y-5 animate-fadeInSlideUp">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 text-[#112D4E]" data-en="Our Comprehensive Services" data-ar="خدماتنا الشاملة">Our Comprehensive Services</h2>
+        <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto" data-en="At Rcon, we offer a comprehensive range of finishing services tailored to meet your unique needs, ensuring a seamless and exceptional outcome for every project." data-ar="في ركون، نقدم مجموعة شاملة من خدمات التشطيب المصممة لتلبية احتياجاتك الفريدة، مما يضمن نتيجة سلسة ومميزة لكل مشروع.">
+            At Rcon, we offer a comprehensive range of finishing services tailored to meet your unique needs,
+            ensuring a seamless and exceptional outcome for every project.
+        </p>
+        <img src="photos/2.jpeg" alt="Modern kitchen with accent lighting and a marble counter island" class="rounded-lg shadow-md mx-auto mb-10 w-full max-w-2xl object-cover h-64 sm:h-80 md:h-96">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Interior Design Consultation" data-ar="استشارات التصميم الداخلي">Interior Design Consultation</h3>
+                <p class="text-gray-800" data-en="Expert advice and creative solutions to visualize your perfect space, from concept to completion." data-ar="مشورة الخبراء وحلول إبداعية لتصور مساحتك المثالية، من الفكرة إلى الإنجاز.">Expert advice and creative solutions to visualize your perfect space, from concept to completion.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Premium Flooring Solutions" data-ar="حلول أرضيات ممتازة">Premium Flooring Solutions</h3>
+                <p class="text-gray-800" data-en="Installation of diverse flooring types including hardwood, laminate, tile, and carpet, with professional precision." data-ar="تركيب أنواع مختلفة من الأرضيات بما في ذلك الخشب الصلب، اللامينيت، البلاط، والسجاد، بدقة احترافية.">Installation of diverse flooring types including hardwood, laminate, tile, and carpet, with professional precision.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Exquisite Wall Finishes & Painting" data-ar="تشطيبات جدران وطلاء رائعة">Exquisite Wall Finishes & Painting</h3>
+                <p class="text-gray-800" data-en="High-quality painting, bespoke wallpapering, and intricate decorative wall treatments for stunning aesthetics." data-ar="طلاء عالي الجودة، ورق حائط مخصص، ومعالجات جدارية زخرفية معقدة لجماليات مذهلة.">High-quality painting, bespoke wallpapering, and intricate decorative wall treatments for stunning aesthetics.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Custom Carpentry & Cabinetry" data-ar="نجارة وخزائن مخصصة">Custom Carpentry & Cabinetry</h3>
+                <p class="text-gray-800" data-en="Bespoke cabinetry, elegant shelving, and intricate woodworking details crafted to your exact specifications." data-ar="خزائن مخصصة، أرفف أنيقة، وتفاصيل خشبية معقدة مصنوعة وفقاً لمواصفاتك الدقيقة.">Bespoke cabinetry, elegant shelving, and intricate woodworking details crafted to your exact specifications.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Modern Lighting Installation" data-ar="تركيب إضاءة حديثة">Modern Lighting Installation</h3>
+                <p class="text-gray-800" data-en="Installation of contemporary and efficient lighting solutions to perfectly enhance the ambiance and functionality of your space." data-ar="تركيب حلول إضاءة عصرية وفعالة لتعزيز الأجواء ووظائف مساحتك بشكل مثالي.">Installation of contemporary and efficient lighting solutions to perfectly enhance the ambiance and functionality of your space.</p>
+            </div>
+            <div class="p-6 rounded-lg shadow-md bg-[#DBE2EF] transition duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                <h3 class="text-xl sm:text-2xl font-semibold text-[#112D4E] mb-3" data-en="Fixture & Appliance Integration" data-ar="دمج التركيبات والأجهزة">Fixture & Appliance Integration</h3>
+                <p class="text-gray-800" data-en="Seamless and professional installation of all fixtures, fittings, and appliances for a complete finish." data-ar="تركيب سلس واحترافي لجميع التركيبات والتجهيزات والأجهزة للحصول على تشطيب كامل.">Seamless and professional installation of all fixtures, fittings, and appliances for a complete finish.</p>
+            </div>
+        </div>
+        
+        
+    </section>
+
+    <section id="contact" class="container mx-auto p-8 bg-white shadow-lg rounded-xl mb-12 opacity-0 transform translate-y-5 animate-fadeInSlideUp">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-6 text-[#112D4E]" data-en="Contact Us" data-ar="اتصل بنا">Contact Us</h2>
+        <p class="text-xl text-gray-700 text-center mb-8 max-w-2xl mx-auto" data-en="Ready to start your next project? Get in touch with Rcon Finishing Units today! Our team is here to answer your questions and help bring your vision to life." data-ar="هل أنت مستعد لبدء مشروعك التالي؟ تواصل مع وحدات ركون للتشطيبات اليوم! فريقنا هنا للإجابة على أسئلتك والمساعدة في تحويل رؤيتك إلى حقيقة.">
+            Ready to start your next project? Get in touch with Rcon Finishing Units today!
+            Our team is here to answer your questions and help bring your vision to life.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#112D4E] mb-6 text-center lg:text-left" data-en="Send us a Message" data-ar="أرسل لنا رسالة">Send us a Message</h3>
+                <form class="space-y-6" action="https://formspree.io/f/mkgbreld" method="POST">
+
+                    <div>
+                        <label for="contact-name" class="block text-md font-semibold text-gray-700 mb-2" data-en="Your Name" data-ar="اسمك">Your Name</label>
+                        <input
+                            type="text"
+                            id="contact-name"
+                            name="name"
+                            placeholder="John Doe"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#3F72AF] focus:border-[#3F72AF] sm:text-md outline-none transition duration-200"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="contact-email" class="block text-md font-semibold text-gray-700 mb-2" data-en="Your Email" data-ar="بريدك الإلكتروني">Your Email</label>
+                        <input
+                            type="email"
+                            id="contact-email"
+                            name="email"
+                            placeholder="you@example.com"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#3F72AF] focus:border-[#3F72AF] sm:text-md outline-none transition duration-200"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="contact-subject" class="block text-md font-semibold text-gray-700 mb-2" data-en="Subject" data-ar="الموضوع">Subject</label>
+                        <input
+                            type="text"
+                            id="contact-subject"
+                            name="subject"
+                            placeholder="Inquiry about residential services"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#3F72AF] focus:border-[#3F72AF] sm:text-md outline-none transition duration-200"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="contact-message" class="block text-md font-semibold text-gray-700 mb-2" data-en="Message" data-ar="الرسالة">Message</label>
+                        <textarea
+                            id="contact-message"
+                            name="message"
+                            rows="6"
+                            placeholder="Type your message here..."
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#3F72AF] focus:border-[#3F72AF] sm:text-md outline-none transition duration-200 resize-none"
+                            required
+                            aria-required="true"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-md text-lg font-semibold text-white bg-gradient-to-r from-[#3F72AF] to-[#112D4E] hover:from-[#112D4E] hover:to-[#3F72AF] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3F72AF] transition duration-300 transform hover:scale-105"
+                            aria-label="Send Message"
+                            data-en="Send Message" data-ar="أرسل الرسالة"
+                        >
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="lg:mt-0 mt-8">
+                <h3 class="text-xl sm:text-2xl font-bold text-[#112D4E] mb-6 text-center lg:text-left" data-en="Our Details" data-ar="تفاصيلنا">Our Details</h3>
+                <div class="space-y-6 text-lg text-gray-700">
+                
+                    <p class="flex items-center lg:justify-start justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3F72AF] mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <a href="tel:+15551234567" class="hover:text-[#112D4E] transition duration-200">01002372461</a>
+                    </p>
+                    <p class="flex items-center lg:justify-start justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3F72AF] mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-9 13H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-7" />
+                        </svg>
+                        <a href="rcon937@gmail.com" class="hover:text-[#112D4E] transition duration-200">rcon937@gmail.com</a>
+                    </p>
+                    <div class="flex items-center lg:justify-start justify-center space-x-4 mt-6">
+                        
+                        <a href="https://www.instagram.com/rcon.finishing/#" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram page">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram Logo" class="h-8 w-8 hover:opacity-80 transition duration-200">
+                        </a>
+                        <a href="https://www.tiktok.com/@rcon.finishing?_t=ZS-8xTon86OVuc&_r=1" target="_blank" rel="noopener noreferrer" aria-label="Visit our TikTok page">
+                            <img src="photos/adee1c20caa7b4d38d7e72154707256b.png" alt="TikTok Logo" class="h-8 w-8 hover:opacity-80 transition duration-200">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="combined-footer-section" class="bg-[#112D4E] text-[#F9F7F7] py-12 rounded-xl shadow-lg mt-12 opacity-0 transform translate-y-5 animate-fadeInSlideUp">
+        <div class="container mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+            <div class="space-y-4">
+                <h3 class="text-xl sm:text-2xl font-bold mb-4" data-en="Platform" data-ar="منصة">Platform</h3>
+                <ul class="space-y-2 text-lg">
+                    <li><a href="#home" class="hover:text-[#DBE2EF] transition duration-200" data-en="Home Page" data-ar="الصفحة الرئيسية">Home Page</a></li>
+                    <li><a href="#contact" class="hover:text-[#DBE2EF] transition duration-200" data-en="Contact Us" data-ar="تواصل معنا">Contact Us</a></li>
+                    
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-xl sm:text-2xl font-bold mb-4" data-en="Contact Us" data-ar="تواصل معنا">Contact Us</h3>
+                <p class="text-xl font-semibold">01002372461</p>
+            </div>
+        </div>
+
+
+        <div class="container mx-auto text-center py-8 mt-8 border-t border-gray-700 text-[#DBE2EF]">
+            <p>&copy; 2024 Rcon Finishing Units. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="privacy_policy.html" class="hover:text-white transition duration-200" data-en="Privacy Policy" data-ar="سياسة الخصوصية">Privacy Policy</a>
+                <a href="terms_of_service.html" class="hover:text-white transition duration-200" data-en="Terms of Service" data-ar="شروط الخدمة">Terms of Service</a>
+            </div>
+        </div>
+    </section>
+
+    <button id="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script>
+        // Message display function (using a simple custom message box)
+        function showMessageBox(message, type = 'info') {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            messageText.textContent = message;
+
+            messageBox.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800');
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-800');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-800');
+            } else {
+                messageBox.classList.add('bg-blue-100', 'text-blue-800');
+            }
+            messageBox.classList.remove('opacity-0');
+            messageBox.classList.add('opacity-100');
+
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+                messageBox.classList.add('opacity-0');
+                setTimeout(() => messageBox.classList.add('hidden'), 500); // Hide after fade out
+            }, 3000);
+        }
+
+        // Get common elements
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const termsModal = document.getElementById('terms-modal');
+        const termsCheckbox = document.getElementById('terms-checkbox');
+        const agreeTermsBtn = document.getElementById('agree-terms-btn');
+        const navToggle = document.getElementById('nav-toggle');
+        const navContent = document.getElementById('nav-content');
+        const backToTopButton = document.getElementById('back-to-top');
+        const languageSwitcher = document.getElementById('language-switcher');
+
+        // Function to handle showing loading animation and disabling scroll
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to hide loading animation and enable scroll
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // DOMContentLoaded: Initial page load logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const termsAccepted = localStorage.getItem('rconTermsAccepted');
+
+            if (!termsAccepted) {
+                // If terms not accepted, hide loading overlay immediately and show modal
+                hideLoading(); // Hide initial loading
+                termsModal.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Keep body overflow hidden for modal
+            } else {
+                // If terms already accepted, show loading for 3 seconds, then hide
+                showLoading(); // Ensure it's visible by default in HTML
+                setTimeout(() => {
+                    hideLoading(); // Hide loading after 3 seconds
+                }, 3000);
+            }
+
+            // Agree Terms Button Listener
+            agreeTermsBtn.addEventListener('click', () => {
+                if (termsCheckbox.checked) {
+                    showLoading(); // Show loading animation
+                    localStorage.setItem('rconTermsAccepted', 'true');
+
+                    setTimeout(() => {
+                        termsModal.classList.remove('show');
+                        hideLoading(); // Hide loading animation and re-enable scrolling
+                        showMessageBox("Terms accepted. Welcome!", "success");
+                    }, 3000); // 3-second delay
+                } else {
+                    showMessageBox("Please agree to the Terms of Service to proceed.", "error");
+                }
+            });
+
+            // Mobile Navigation Toggle
+            navToggle.addEventListener('click', function() {
+                const isHidden = navContent.classList.toggle('hidden');
+                navToggle.setAttribute('aria-expanded', !isHidden);
+            });
+
+            // Handle clicks on navigation links (internal anchors)
+            const navLinks = document.querySelectorAll('#nav-content a');
+            navLinks.forEach(link => {
+                // Only apply this to internal anchor links
+                if (link.href.startsWith(window.location.origin + window.location.pathname + '#')) {
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault(); // Prevent immediate default scroll
+                        const targetId = event.currentTarget.getAttribute('href'); // Get the target ID
+                        showLoading(); // Show loading animation
+
+                        setTimeout(() => {
+                            hideLoading(); // Hide loading
+                            // Manually scroll to the section
+                            document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+                            // Hide mobile menu if open
+                            if (window.innerWidth < 1024) {
+                                navContent.classList.add('hidden');
+                                navToggle.setAttribute('aria-expanded', 'false');
+                            }
+                        }, 3000); // 3-second delay
+                    });
+                }
+            });
+
+            // Handle clicks on footer Privacy Policy and Terms of Service links
+            const footerPrivacyLink = document.querySelector('footer a[href="privacy_policy.html"]');
+            const footerTermsLink = document.querySelector('footer a[href="terms_of_service.html"]');
+
+            [footerPrivacyLink, footerTermsLink].forEach(link => {
+                if (link) {
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault(); // Prevent immediate navigation
+                        const targetHref = event.currentTarget.href;
+                        showLoading(); // Show loading animation
+
+                        setTimeout(() => {
+                            hideLoading(); // Hide loading
+                            window.location.href = targetHref; // Navigate after delay
+                        }, 3000); // 3-second delay
+                    });
+                }
+            });
+        });
+
+        // Carousel functionality for About Us section
+        const carousel = document.getElementById('about-carousel');
+        const dotsContainer = document.getElementById('about-carousel-dots');
+        let currentIndex = 0;
+
+        function updateCarousel() {
+            if (!carousel || carousel.children.length === 0) return;
+
+            const slideWidth = carousel.children[0].clientWidth;
+            carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
+
+            // Update active dot and ARIA attributes
+            Array.from(dotsContainer.children).forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('active');
+                    dot.setAttribute('aria-selected', 'true');
+                    dot.setAttribute('tabindex', '0');
+                } else {
+                    dot.classList.remove('active');
+                    dot.setAttribute('aria-selected', 'false');
+                    dot.setAttribute('tabindex', '-1');
+                }
+            });
+
+            // Update aria-hidden for carousel images
+            Array.from(carousel.children).forEach((img, index) => {
+                if (index === currentIndex) {
+                    img.removeAttribute('aria-hidden');
+                } else {
+                    img.setAttribute('aria-hidden', 'true');
+                }
+            });
+        }
+
+        // Add click listeners to dots
+        if (dotsContainer) { // Check if dotsContainer exists
+            Array.from(dotsContainer.children).forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    currentIndex = parseInt(e.target.dataset.slide);
+                    updateCarousel();
+                });
+            });
+        }
+
+
+        // Optional: Auto-advance carousel (only if carousel exists)
+        let carouselInterval;
+        if (carousel) {
+            carouselInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % carousel.children.length;
+                updateCarousel();
+            }, 5000); // Change image every 5 seconds
+
+            // Pause carousel on hover for better UX
+            carousel.addEventListener('mouseenter', () => clearInterval(carouselInterval));
+            carousel.addEventListener('mouseleave', () => {
+                carouselInterval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % carousel.children.length;
+                    updateCarousel();
+                }, 5000);
+            });
+        }
+
+
+        // Intersection Observer for section animations
+        const sections = document.querySelectorAll('section');
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // Trigger when 10% of the section is visible
+        };
+
+        const sectionObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fadeInSlideUp');
+                    entry.target.classList.remove('opacity-0'); // Ensure it becomes visible
+                    entry.target.classList.remove('translate-y-5'); // Reset transform
+                    observer.unobserve(entry.target); // Stop observing once animated
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            // Apply initial hidden state for animation
+            section.classList.add('opacity-0', 'transform', 'translate-y-5');
+            sectionObserver.observe(section);
+        });
+
+        // Initial carousel update (only if carousel exists)
+        window.addEventListener('resize', updateCarousel);
+        if (carousel) {
+            updateCarousel(); // Initial call
+        }
+
+
+        // Back to Top Button Logic
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) { // Show button after scrolling 300px
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Language translation function
+        function translatePage(lang) {
+            document.documentElement.lang = lang; // Set HTML lang attribute
+
+            const elements = document.querySelectorAll('[data-en], [data-ar]');
+            elements.forEach(element => {
+                if (lang === 'ar' && element.dataset.ar) {
+                    element.textContent = element.dataset.ar;
+                } else if (lang === 'en' && element.dataset.en) {
+                    element.textContent = element.dataset.en;
+                }
+            });
+
+            // Update placeholders separately as textContent doesn't affect them
+            const contactNameInput = document.getElementById('contact-name');
+            if (contactNameInput) {
+                contactNameInput.placeholder = (lang === 'ar') ? 'جون دو' : 'John Doe';
+            }
+            const contactEmailInput = document.getElementById('contact-email');
+            if (contactEmailInput) {
+                contactEmailInput.placeholder = (lang === 'ar') ? 'أنت@مثال.كوم' : 'you@example.com';
+            }
+            const contactSubjectInput = document.getElementById('contact-subject');
+            if (contactSubjectInput) {
+                contactSubjectInput.placeholder = (lang === 'ar') ? 'استفسار عن خدمات سكنية' : 'Inquiry about residential services';
+            }
+            const contactMessageTextarea = document.getElementById('contact-message');
+            if (contactMessageTextarea) {
+                contactMessageTextarea.placeholder = (lang === 'ar') ? 'اكتب رسالتك هنا...' : 'Type your message here...';
+            }
+
+            showMessageBox(`Language changed to ${lang === 'en' ? 'English' : 'Arabic'}`, 'info');
+        }
+
+        // Event listener for language switcher change
+        languageSwitcher.addEventListener('change', (event) => {
+            translatePage(event.target.value);
+        });
+
+        // Initial translation based on default or saved preference
+        // You might store user's preferred language in localStorage and load it here.
+        // For now, it defaults to English on page load unless changed.
+        translatePage(languageSwitcher.value); // Apply translation on page load
+    </script>
+</body>
+</html>
